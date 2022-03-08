@@ -1,5 +1,5 @@
 import { html } from '../util';
-import { store, renderAfterStateChange } from '../store';
+import { renderAfterStateChange } from '../store';
 
 export function buttonClickCountView() {
   let template = html`<p></p>`;
