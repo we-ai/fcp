@@ -9,6 +9,7 @@ export function buttonView(props = {}) {
   >
     ${text}
   </button>`;
+  
   const button = template.querySelector('button');
   button.addEventListener('click', () => {
     count++; // local state update

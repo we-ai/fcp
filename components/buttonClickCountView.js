@@ -1,14 +1,18 @@
 import { html } from '../util';
-import { renderAfterStateChange } from '../store';
+import { store } from '../store';
 
 export function buttonClickCountView() {
-  let template = html`<p></p>`;
+  let count = store.getState().count;
+  const template = html`<p>Count the total clicks of buttons.</p>`;
+
+  // Hold the reference to p
   const p = template.querySelector('p');
-  renderAfterStateChange(['count'], (count) => {
-    p.textContent = `You clicked the buttons ${count} ${
-      count > 1 ? 'times' : 'time'
-    }`;
-  });
+  store.subscribe(
+    (state) => state.count,
+    (count) => {
+      p.textContent = `You clicked me ${count} ${count > 1 ? 'times' : 'time'}`;
+    }
+  );
   return template;
 }
 export default buttonClickCountView;
