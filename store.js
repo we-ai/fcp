@@ -1,9 +1,8 @@
-import createStore from 'zustand/vanilla';
-import { subscribeWithSelector } from 'zustand/middleware';
+import createStore from './stateManager';
+let startState = { count: 0 };
+let store = createStore(startState);
 
-let originalState = { count: 0 };
-let store = createStore(subscribeWithSelector((set, get) => originalState));
-
+// Subscribe to the store with a list of selectors.
 function renderAfterStateChange(stateSliceList, callback) {
   store.subscribe((state) => {
     if (stateSliceList.length === 0) return state;
