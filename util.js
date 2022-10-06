@@ -88,17 +88,17 @@ export function removeChildren(ele) {
 }
 
 function wrapToDiv(nodes) {
-  let div = document.createElement('div');
+  let divEle = document.createElement('div');
 
   for (let node of nodes) {
     if (node instanceof DocumentFragment) {
-      div.appendChild(node); //appendChild() works for DocumentFragment and Node
+      divEle.appendChild(node); //appendChild() works for DocumentFragment and Node
     } else {
-      div.append(node); //append() works for HTMLElement and DOMString
+      divEle.append(node); //append() works for HTMLElement and DOMString
     }
   }
 
-  return div;
+  return divEle;
 }
 
 export function getStyleString(style) {
