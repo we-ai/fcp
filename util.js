@@ -7,7 +7,8 @@
 export function html(strings, ...values) {
   const N = values.length;
   let transformedStringList = [];
-  let elementsAndDocumentFragments = [];
+  let elementAndDocumentFragmentList = [];
+
   // If HTML elements are found, save them in an array
   for (let i = 0; i < N; i++) {
     if (
@@ -15,20 +16,23 @@ export function html(strings, ...values) {
       values[i] instanceof DocumentFragment
     ) {
       transformedStringList.push(strings[i], `<div id="placeholder"></div>`);
-      elementsAndDocumentFragments.push(values[i]);
+      elementAndDocumentFragmentList.push(values[i]);
     } else {
       transformedStringList.push(strings[i], values[i]);
     }
   }
+
   transformedStringList.push(strings[N]);
-  let template = stringToHTML(transformedStringList.join(''));
-  if (elementsAndDocumentFragments.length > 0) {
-    let phs = template.querySelectorAll('#placeholder');
-    for (let i = 0; i < phs.length; i++) {
-      replaceElement(phs[i], elementsAndDocumentFragments[i]);
+  let fragment = stringToHTML(transformedStringList.join(''));
+
+  if (elementAndDocumentFragmentList.length > 0) {
+    const phEleList = fragment.querySelectorAll('#placeholder');
+    for (let i = 0; i < phEleList.length; i++) {
+      replaceElement(phEleList[i], elementAndDocumentFragmentList[i]);
     }
   }
-  return template;
+
+  return fragment;
 }
 
 /**
@@ -44,31 +48,31 @@ export function stringToHTML(str) {
 }
 
 export function replaceElement(ele, ...nodes) {
-  const div = wrapToDiv(nodes);
-  ele.replaceWith(...div.children);
+  const divEle = wrapToDiv(nodes);
+  ele.replaceWith(...divEle.children);
   return ele;
 }
 export function insertBefore(ele, ...nodes) {
-  const div = wrapToDiv(nodes);
-  ele.before(...div.children);
+  const divEle = wrapToDiv(nodes);
+  ele.before(...divEle.children);
   return ele;
 }
 
 export function insertAfter(ele, ...nodes) {
-  const div = wrapToDiv(nodes);
-  ele.after(...div.children);
+  const divEle = wrapToDiv(nodes);
+  ele.after(...divEle.children);
   return ele;
 }
 
 export function prependChildren(ele, ...nodes) {
-  const div = wrapToDiv(nodes);
-  ele.prepend(...div.children);
+  const divEle = wrapToDiv(nodes);
+  ele.prepend(...divEle.children);
   return ele;
 }
 
 export function appendChildren(ele, ...nodes) {
-  const div = wrapToDiv(nodes);
-  ele.append(...div.children);
+  const divEle = wrapToDiv(nodes);
+  ele.append(...divEle.children);
   return ele;
 }
 
@@ -76,8 +80,16 @@ export const insertChildrenToStart = prependChildren;
 
 export const insertChildrenToEnd = appendChildren;
 
+export function removeChildren(ele) {
+  while (ele.firstChild) {
+    ele.firstChild.remove();
+  }
+  return ele;
+}
+
 function wrapToDiv(nodes) {
   let div = document.createElement('div');
+
   for (let node of nodes) {
     if (node instanceof DocumentFragment) {
       div.appendChild(node); //appendChild() works for DocumentFragment and Node
@@ -85,6 +97,7 @@ function wrapToDiv(nodes) {
       div.append(node); //append() works for HTMLElement and DOMString
     }
   }
+
   return div;
 }
 
@@ -96,19 +109,23 @@ export function getStyleString(style) {
     }
   } else if (typeof style === 'string') {
     let splitted = style.replace(/\n/g, ' ').split(';');
+
     for (let s of splitted) {
       let [k, v] = s.split(':');
       if (k && v) styleList.push(`${k}: ${v}`);
     }
+
   }
+
   return styleList.join(';');
 }
 
 export function dispatchEventWithData(element, eventName, data = {}) {
-  var event = new CustomEvent(eventName, {
+  const event = new CustomEvent(eventName, {
     detail: data,
     bubbles: true,
     cancelable: true,
   });
+
   return element.dispatchEvent(event);
 }
