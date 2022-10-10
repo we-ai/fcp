@@ -1,5 +1,5 @@
-import { fragment } from '../util';
-import { buttonView } from './buttonView';
+import { fragment } from '../util.js';
+import { buttonView } from './buttonView.js';
 
 export function dialogView(props = {}) {
   const { title = 'Diaglog Title', content = 'Dialog content' } = props;
@@ -9,7 +9,7 @@ export function dialogView(props = {}) {
     ${buttonView()}
     <div id="ph1"></div>
   </div>`;
-  
+
   return df;
 }
 

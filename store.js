@@ -1,4 +1,5 @@
-import createStore from './stateManager';
+import createStore from './stateManager.js';
+
 let startState = { count: 0 };
 let store = createStore(startState);
 

@@ -1,5 +1,5 @@
-export { aboutView } from './aboutView';
-export { buttonView } from './buttonView';
-export { dialogView } from './dialogView';
-export { buttonClickCountView } from './buttonClickCountView';
-export { cardView } from './cardView';
+export { aboutView } from './aboutView.js';
+export { buttonView } from './buttonView.js';
+export { dialogView } from './dialogView.js';
+export { buttonClickCountView } from './buttonClickCountView.js';
+export { cardView } from './cardView.js';

@@ -1,5 +1,5 @@
-import { fragment, getStyleString } from '../util';
-import { store } from '../store';
+import { fragment, getStyleString } from '../util.js';
+import { store } from '../store.js';
 
 export function buttonView(props = {}) {
   const { text = 'Button', style: styleInput = {} } = props;
@@ -19,7 +19,7 @@ export function buttonView(props = {}) {
     }`;
     store.setState((prev) => ({ count: prev.count + 1 })); // global state update
   });
-  
+
   return df;
 }
 

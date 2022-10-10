@@ -1,5 +1,5 @@
-import { fragment } from '../util';
-import { store } from '../store';
+import { fragment } from '../util.js';
+import { store } from '../store.js';
 
 export function buttonClickCountView() {
   let count = store.getState().count;

@@ -1,4 +1,4 @@
-import { fragment } from '../util';
+import { fragment } from '../util.js';
 
 export function cardView(props = {}) {
   const {

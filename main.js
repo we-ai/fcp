@@ -1,6 +1,6 @@
-import './style.scss';
+// import './style.scss';
 import { fragment } from './util.js';
-import { aboutView, buttonView, buttonClickCountView } from './components';
+import { aboutView, buttonView, buttonClickCountView } from './components/index.js';
 
 const app = document.querySelector('#app');
 
