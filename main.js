@@ -1,9 +1,9 @@
 import './style.scss';
-import { appendChildren, html } from './util.js';
+import { appendChildren, fragment } from './util.js';
 import { aboutView, buttonView, buttonClickCountView } from './components';
 
 const app = document.querySelector('#app');
-let template = html`
+let df = fragment`
   <div class="container">
     ${aboutView({ content: 'Funcitonal Components are awesome!' })}
     <div class="row">
@@ -13,4 +13,4 @@ let template = html`
     <div class="row">${buttonClickCountView()}</div>
   </div>
 `;
-appendChildren(app, template);
+appendChildren(app, df);

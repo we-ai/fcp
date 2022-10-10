@@ -1,4 +1,5 @@
-import { html } from '../util';
+import { fragment } from '../util';
+
 export function cardView(props = {}) {
   const {
     class: className = '',
@@ -9,7 +10,7 @@ export function cardView(props = {}) {
     linkText = 'Link text',
   } = props;
 
-  let template = html`
+  let df = fragment`
     <div class="d-flex justify-content-center ${className}">
       <div class="card">
         <img src=${imgSrc} class="card-img-top" alt="..." />
@@ -23,6 +24,7 @@ export function cardView(props = {}) {
     </div>
   `;
 
-  return template;
+  return df;
 }
+
 export default cardView;

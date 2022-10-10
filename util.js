@@ -4,7 +4,7 @@
  * @param  {any[]} values
  * @returns {DocumentFragment}
  */
-export function html(strings, ...values) {
+export function fragment(strings, ...values) {
   const N = values.length;
   let transformedStringList = [];
   let elementAndDocumentFragmentList = [];
@@ -23,7 +23,7 @@ export function html(strings, ...values) {
   }
 
   transformedStringList.push(strings[N]);
-  let fragment = stringToHTML(transformedStringList.join(''));
+  let fragment = stringToFragment(transformedStringList.join(''));
 
   if (elementAndDocumentFragmentList.length > 0) {
     const phEleList = fragment.querySelectorAll('#placeholder');
@@ -40,39 +40,45 @@ export function html(strings, ...values) {
  * @param {string} str - The string to parse.
  * @returns {DocumentFragment}
  */
-export function stringToHTML(str) {
+export function stringToFragment(str) {
   const doc = new DOMParser().parseFromString(str, 'text/html');
   const fragment = new DocumentFragment();
-  fragment.append(...doc.body.children); // append all children elements in doc.body
+  fragment.append(...doc.body.children);
   return fragment;
 }
 
 export function replaceElement(ele, ...nodes) {
   const divEle = wrapToDiv(nodes);
   ele.replaceWith(...divEle.children);
+  
   return ele;
 }
+
 export function insertBefore(ele, ...nodes) {
   const divEle = wrapToDiv(nodes);
   ele.before(...divEle.children);
+  
   return ele;
 }
 
 export function insertAfter(ele, ...nodes) {
   const divEle = wrapToDiv(nodes);
   ele.after(...divEle.children);
+  
   return ele;
 }
 
 export function prependChildren(ele, ...nodes) {
   const divEle = wrapToDiv(nodes);
   ele.prepend(...divEle.children);
+
   return ele;
 }
 
 export function appendChildren(ele, ...nodes) {
   const divEle = wrapToDiv(nodes);
   ele.append(...divEle.children);
+  
   return ele;
 }
 
@@ -84,18 +90,15 @@ export function removeChildren(ele) {
   while (ele.firstChild) {
     ele.firstChild.remove();
   }
+ 
   return ele;
 }
 
 function wrapToDiv(nodes) {
   let divEle = document.createElement('div');
 
-  for (let node of nodes) {
-    if (node instanceof DocumentFragment) {
-      divEle.appendChild(node); //appendChild() works for DocumentFragment and Node
-    } else {
-      divEle.append(node); //append() works for HTMLElement and DOMString
-    }
+  for (const node of nodes) {
+    divEle.appendChild(node);
   }
 
   return divEle;
@@ -114,7 +117,6 @@ export function getStyleString(style) {
       let [k, v] = s.split(':');
       if (k && v) styleList.push(`${k}: ${v}`);
     }
-
   }
 
   return styleList.join(';');

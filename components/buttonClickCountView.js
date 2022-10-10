@@ -1,18 +1,19 @@
-import { html } from '../util';
+import { fragment } from '../util';
 import { store } from '../store';
 
 export function buttonClickCountView() {
   let count = store.getState().count;
-  const template = html`<p>Count the total clicks of buttons.</p>`;
+  const df = fragment`<p>Count the total clicks of buttons.</p>`;
 
   // Hold the reference to p
-  const p = template.querySelector('p');
+  const pEle = df.querySelector('p');
   store.subscribe(
     (state) => state.count,
     (count) => {
-      p.textContent = `You clicked me ${count} ${count > 1 ? 'times' : 'time'}`;
+      pEle.innerText = `You clicked ${count} ${count > 1 ? 'times' : 'time'}`;
     }
   );
-  return template;
+  return df;
 }
+
 export default buttonClickCountView;
