@@ -50,21 +50,21 @@ export function stringToFragment(str) {
 export function replaceElement(ele, ...nodes) {
   const divEle = wrapToDiv(nodes);
   ele.replaceWith(...divEle.children);
-  
+
   return ele;
 }
 
 export function insertBefore(ele, ...nodes) {
   const divEle = wrapToDiv(nodes);
   ele.before(...divEle.children);
-  
+
   return ele;
 }
 
 export function insertAfter(ele, ...nodes) {
   const divEle = wrapToDiv(nodes);
   ele.after(...divEle.children);
-  
+
   return ele;
 }
 
@@ -78,7 +78,7 @@ export function prependChildren(ele, ...nodes) {
 export function appendChildren(ele, ...nodes) {
   const divEle = wrapToDiv(nodes);
   ele.append(...divEle.children);
-  
+
   return ele;
 }
 
@@ -90,7 +90,7 @@ export function removeChildren(ele) {
   while (ele.firstChild) {
     ele.firstChild.remove();
   }
- 
+
   return ele;
 }
 
@@ -102,6 +102,47 @@ function wrapToDiv(nodes) {
   }
 
   return divEle;
+}
+/**
+ * Create a template (`df`) and an update function (`update`).
+ * @param {function} templateFunc
+ * @param {object} templateProps
+ * @param {object} initialState
+ * @returns {{df: DocumentFragment, update: function}}
+ */
+export function createTemplateAndUpdateFunction(
+  templateFunc,
+  templateProps = {},
+  initialState = {}
+) {
+  const df = templateFunc(templateProps, initialState);
+  let nodes = Array.from(df.children);
+
+  const update = (updatedState = {}) => {
+    const newDf = templateFunc(templateProps, updatedState);
+    nodes = replaceNodes(nodes, Array.from(newDf.children));
+  };
+
+  return { df, update };
+}
+
+/**
+ * Replace old nodes with new nodes.
+ * @param {Node[]} oldNodes
+ * @param {Node[]} newNodes
+ * @returns {Node[]}
+ */
+export function replaceNodes(oldNodes, newNodes) {
+  while (oldNodes.length > 1) {
+    oldNodes.pop().remove();
+  }
+
+  if (oldNodes.length === 1) {
+    oldNodes[0].replaceWith(...newNodes);
+    return newNodes;
+  }
+
+  return oldNodes;
 }
 
 export function getStyleString(style) {

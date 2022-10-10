@@ -3,7 +3,11 @@ import createStore from './stateManager.js';
 let startState = { count: 0 };
 let store = createStore(startState);
 
-// Subscribe to the store with a list of selectors.
+/**
+ * 
+ * @param {string[]} stateSliceList 
+ * @param {function} callback 
+ */
 function renderAfterStateChange(stateSliceList, callback) {
   store.subscribe((state) => {
     if (stateSliceList.length === 0) return state;

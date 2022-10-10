@@ -1,18 +1,32 @@
-import { fragment } from '../util.js';
+import { fragment, createTemplateAndUpdateFunction } from '../util.js';
 import { store } from '../store.js';
 
-export function buttonClickCountView() {
-  let count = store.getState().count;
-  const df = fragment`<p>Count the total clicks of buttons.</p>`;
+const templateFunc = ({}, { count = 0 }) => fragment`
+<div class="col-md-12">
+${pView(count)}
+</div>`;
 
-  // Hold the reference to p
-  const pEle = df.querySelector('p');
-  store.subscribe(
-    (state) => state.count,
-    (count) => {
-      pEle.innerText = `You clicked ${count} ${count > 1 ? 'times' : 'time'}`;
-    }
-  );
+const pView = (count) => {
+  const df = fragment`<p>You clicked buttons ${count} ${
+    count > 1 ? 'times' : 'time'
+  }</p>`;
+  return df;
+};
+
+export function buttonClickCountView() {
+  const { df, update } = createTemplateAndUpdateFunction(templateFunc);
+
+  // event listener
+  const divEle= df.querySelector('div');
+  divEle.addEventListener('click', (e) => {
+    const randomColor = Math.floor(Math.random() * 16777215).toString(16);
+    e.target.style = `background-color: #${randomColor}`;
+  });
+
+  store.renderAfterStateChange(['count'], ([count]) => {
+    update({ count });
+  });
+
   return df;
 }
 
