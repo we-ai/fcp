@@ -1,9 +1,10 @@
 import './style.scss';
-import { appendChildren, fragment } from './util.js';
+import { fragment } from './util.js';
 import { aboutView, buttonView, buttonClickCountView } from './components';
 
 const app = document.querySelector('#app');
-let df = fragment`
+
+let rootFragment = fragment`
   <div class="container">
     ${aboutView({ content: 'Funcitonal Components are awesome!' })}
     <div class="row">
@@ -13,4 +14,5 @@ let df = fragment`
     <div class="row">${buttonClickCountView()}</div>
   </div>
 `;
-appendChildren(app, df);
+
+app.appendChild(rootFragment);
