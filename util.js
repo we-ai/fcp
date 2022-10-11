@@ -11,7 +11,6 @@ export function fragment(strings, ...values) {
   let elementAndDocumentFragmentList = [];
   let eventList=[];
 
-  // If HTML elements are found, save them in an array
   for (let i = 0; i < N; i++) {
     if (
       values[i] instanceof HTMLElement ||
@@ -19,11 +18,11 @@ export function fragment(strings, ...values) {
     ) {
       transformedStringList.push(inputStrings[i], `<div id="placeholder"></div>`);
       elementAndDocumentFragmentList.push(values[i]);
-    } else if ( typeof values[i] === 'function' && inputStrings[i].match(/on[a-z]{2,20}\s*=\s*$/) ) { 
-      const [matchedString, eventString] = inputStrings[i].match(/on([a-z]{2,20})\s*=\s*$/);
-      inputStrings[i] = inputStrings[i].replace(matchedString, `data-event-id=${i}`);
+    } else if ( typeof values[i] === 'function' && inputStrings[i].match(/on[a-z]{2,30}\s*=\s*$/) ) { 
+      const [matchedString, eventString] = inputStrings[i].match(/on([a-z]{2,30})\s*=\s*$/);
+      inputStrings[i] = inputStrings[i].replace(matchedString, `data-event-${eventString}${i}`);
       transformedStringList.push(inputStrings[i]);
-      eventList.push({eventString, callback: values[i]});
+      eventList.push({eventString, index: i, callback: values[i]});
     } else {
       transformedStringList.push(inputStrings[i], values[i]);
     }
@@ -40,11 +39,8 @@ export function fragment(strings, ...values) {
   }
 
   if (eventList.length > 0) {
-    const eventEleList = documentFragment.querySelectorAll('[data-event-id]');
-
-    for (let i = 0; i < eventEleList.length; i++) {
-      const eventEle = eventEleList[i];
-      const {eventString, callback} = eventList[i];
+    for (const {eventString, index, callback} of eventList) {
+      const eventEle = documentFragment.querySelector(`[data-event-${eventString}${index}]`);
       eventEle.addEventListener(eventString, callback);
     }
   }
