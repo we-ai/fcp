@@ -1,13 +1,15 @@
 /**
  * Use tag template to parses a string into HTML elements
- * @param {string[]} strings
+ * @param {string[]} inputStrings
  * @param  {any[]} values
  * @returns {DocumentFragment}
  */
 export function fragment(strings, ...values) {
   const N = values.length;
+  let inputStrings= strings.slice();
   let transformedStringList = [];
   let elementAndDocumentFragmentList = [];
+  let eventList=[];
 
   // If HTML elements are found, save them in an array
   for (let i = 0; i < N; i++) {
@@ -15,24 +17,39 @@ export function fragment(strings, ...values) {
       values[i] instanceof HTMLElement ||
       values[i] instanceof DocumentFragment
     ) {
-      transformedStringList.push(strings[i], `<div id="placeholder"></div>`);
+      transformedStringList.push(inputStrings[i], `<div id="placeholder"></div>`);
       elementAndDocumentFragmentList.push(values[i]);
+    } else if ( typeof values[i] === 'function' && inputStrings[i].match(/on[a-z]{2,20}\s*=\s*$/) ) { 
+      const [matchedString, eventString] = inputStrings[i].match(/on([a-z]{2,20})\s*=\s*$/);
+      inputStrings[i] = inputStrings[i].replace(matchedString, `data-event-id=${i}`);
+      transformedStringList.push(inputStrings[i]);
+      eventList.push({eventString, callback: values[i]});
     } else {
-      transformedStringList.push(strings[i], values[i]);
+      transformedStringList.push(inputStrings[i], values[i]);
     }
   }
 
-  transformedStringList.push(strings[N]);
-  let fragment = stringToFragment(transformedStringList.join(''));
+  transformedStringList.push(inputStrings[N]);
+  let documentFragment = stringToFragment(transformedStringList.join(''));
 
   if (elementAndDocumentFragmentList.length > 0) {
-    const phEleList = fragment.querySelectorAll('#placeholder');
+    const phEleList = documentFragment.querySelectorAll('#placeholder');
     for (let i = 0; i < phEleList.length; i++) {
       replaceElement(phEleList[i], elementAndDocumentFragmentList[i]);
     }
   }
 
-  return fragment;
+  if (eventList.length > 0) {
+    const eventEleList = documentFragment.querySelectorAll('[data-event-id]');
+
+    for (let i = 0; i < eventEleList.length; i++) {
+      const eventEle = eventEleList[i];
+      const {eventString, callback} = eventList[i];
+      eventEle.addEventListener(eventString, callback);
+    }
+  }
+
+  return documentFragment;
 }
 
 /**
