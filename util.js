@@ -18,11 +18,12 @@ export function fragment(strings, ...values) {
     ) {
       transformedStringList.push(inputStrings[i], `<div id="placeholder"></div>`);
       elementAndDocumentFragmentList.push(values[i]);
-    } else if ( typeof values[i] === 'function' && inputStrings[i].match(/on[a-z]{2,30}\s*=\s*$/) ) { 
+    } else if ( typeof values[i] === 'function' && 
+              inputStrings[i].match(/on[a-z]{2,30}\s*=\s*$/) ) { 
       const [matchedString, eventString] = inputStrings[i].match(/on([a-z]{2,30})\s*=\s*$/);
       inputStrings[i] = inputStrings[i].replace(matchedString, `data-event-${eventString}${i}`);
       transformedStringList.push(inputStrings[i]);
-      eventList.push({eventString, index: i, callback: values[i]});
+      eventList.push({eventString, index: i, eventHandler: values[i]});
     } else {
       transformedStringList.push(inputStrings[i], values[i]);
     }
@@ -39,9 +40,9 @@ export function fragment(strings, ...values) {
   }
 
   if (eventList.length > 0) {
-    for (const {eventString, index, callback} of eventList) {
-      const eventEle = documentFragment.querySelector(`[data-event-${eventString}${index}]`);
-      eventEle.addEventListener(eventString, callback);
+    for (const {eventString, index, eventHandler} of eventList) {
+      const eventTarget = documentFragment.querySelector(`[data-event-${eventString}${index}]`);
+      eventTarget.addEventListener(eventString, eventHandler);
     }
   }
 
@@ -151,7 +152,7 @@ export function replaceNodes(oldNodes, newNodes) {
   }
 
   if (oldNodes.length === 1) {
-    oldNodes[0].replaceWith(...newNodes);
+    oldNodes.pop().replaceWith(...newNodes);
     return newNodes;
   }
 
