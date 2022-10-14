@@ -154,11 +154,11 @@ export function replaceNodes(oldNodes, newNodes) {
     return oldNodes;
   }
 
-  const oldNodesWrapper = document.createElement('div');
+  const wrapperDiv = document.createElement('div');
   oldNodes[oldNodes.length - 1].after(...newNodes);
-  oldNodesWrapper.append(...oldNodes);
+  wrapperDiv.append(...oldNodes);
 
-  return Array.from(oldNodesWrapper.children);
+  return Array.from(wrapperDiv.children);
 }
 
 export function getStyleString(style) {
@@ -191,20 +191,35 @@ export function dispatchEventWithData(element, eventName, data = {}) {
 
 /**
  * Deep copy an object.
- * @param {*} inputObject 
+ * @param {*} input 
  * @returns 
  */
-const deepCopy = (inputObject) => {
-  // typeof null === 'object'
-  if (typeof inputObject !== 'object' || inputObject === null) {
-    return inputObject;
+export function deepCopy(input) {
+
+  if (typeOf(input) !== 'object') {
+    return input;
   }
 
-  const outputObject = Array.isArray(inputObject) ? [] : {};
+  let output = Array.isArray(input) ? [] : {};
 
-  for (const key in inputObject) {
-    outputObject[key] = deepCopy(inputObject[key]);
+  for (const key in input) {
+    output[key] = deepCopy(input[key]);
   }
 
-  return outputObject;
+  return output;
 };
+
+/**
+ * Further separate 'null' type from 'object' type.
+ * @param {*} value 
+ * @returns {"string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function" | "null"}
+ */
+export function typeOf(value) {
+  let type = typeof value;
+
+  if (value === null && type === 'object') {
+    type = 'null';
+  }
+
+  return type;
+}
