@@ -1,13 +1,15 @@
 // This state manager was inspired by zustand (https://github.com/pmndrs/zustand)
-export default function createStore(startState = {}) {
-  let state = startState;
+import {deepCopy} from './utils.js';
+
+export default function createStore(initialState = {}) {
+  let state = deepCopy(initialState);
   const listeners = new Set();
 
   const setState = (update, replace) => {
-    const currState = typeof update === 'function' ? update(state) : update;
-    if (currState !== state) {
+    const currSlice = typeof update === 'function' ? update(state) : update;
+    if (currSlice !== state) {
       const prevState = state;
-      state = replace ? currState : { ...state, ...currState };
+      state = replace ? currSlice : { ...state, ...currSlice };
       listeners.forEach((listener) => listener(state, prevState));
     }
   };

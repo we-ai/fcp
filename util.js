@@ -30,7 +30,7 @@ export function fragment(strings, ...values) {
   }
 
   transformedStringList.push(inputStrings[N]);
-  let documentFragment = stringToFragment(transformedStringList.join(''));
+  const documentFragment = stringToFragment(transformedStringList.join(''));
 
   if (elementAndDocumentFragmentList.length > 0) {
     const phEleList = documentFragment.querySelectorAll('#placeholder');
@@ -61,36 +61,36 @@ export function stringToFragment(str) {
   return fragment;
 }
 
-export function replaceElement(ele, ...nodes) {
-  const divEle = wrapToDiv(nodes);
+export function replaceElement(ele, ...nodeList) {
+  const divEle = wrapToDiv(nodeList);
   ele.replaceWith(...divEle.children);
 
   return ele;
 }
 
-export function insertBefore(ele, ...nodes) {
-  const divEle = wrapToDiv(nodes);
+export function insertBefore(ele, ...nodeList) {
+  const divEle = wrapToDiv(nodeList);
   ele.before(...divEle.children);
 
   return ele;
 }
 
-export function insertAfter(ele, ...nodes) {
-  const divEle = wrapToDiv(nodes);
+export function insertAfter(ele, ...nodeList) {
+  const divEle = wrapToDiv(nodeList);
   ele.after(...divEle.children);
 
   return ele;
 }
 
-export function prependChildren(ele, ...nodes) {
-  const divEle = wrapToDiv(nodes);
+export function prependChildren(ele, ...nodeList) {
+  const divEle = wrapToDiv(nodeList);
   ele.prepend(...divEle.children);
 
   return ele;
 }
 
-export function appendChildren(ele, ...nodes) {
-  const divEle = wrapToDiv(nodes);
+export function appendChildren(ele, ...nodeList) {
+  const divEle = wrapToDiv(nodeList);
   ele.append(...divEle.children);
 
   return ele;
@@ -100,20 +100,21 @@ export const insertChildrenToStart = prependChildren;
 
 export const insertChildrenToEnd = appendChildren;
 
-export function removeChildren(ele) {
-  while (ele.firstChild) {
-    ele.firstChild.remove();
-  }
+export function removeAndReturnChildren(ele) {
+  const divEle = document.createElement('div');
+  divEle.append(...ele.children);
 
-  return ele;
+  return Array.from(divEle.children);
 }
 
-function wrapToDiv(nodes) {
+/**
+ * 
+ * @param {Node[]} nodeList 
+ * @returns HTMLDivElement
+ */
+function wrapToDiv(nodeList) {
   let divEle = document.createElement('div');
-
-  for (const node of nodes) {
-    divEle.appendChild(node);
-  }
+  divEle.replaceChildren(...nodeList);
 
   return divEle;
 }
@@ -122,22 +123,24 @@ function wrapToDiv(nodes) {
  * @param {function} templateFunc
  * @param {object} templateProps
  * @param {object} initialState
- * @returns {{df: DocumentFragment, update: function}}
+ * @returns {[df: DocumentFragment, update: function]}
  */
-export function createTemplateAndUpdateFunction(
+export function createTemplateAndUpdate(
   templateFunc,
   templateProps = {},
   initialState = {}
 ) {
   const df = templateFunc(templateProps, initialState);
   let nodes = Array.from(df.children);
+  let newDfRef = df;
 
-  const update = (updatedState = {}) => {
-    const newDf = templateFunc(templateProps, updatedState);
+  const update = (updatedProps = {}, updatedState = {}) => {
+    const newDf = templateFunc({...templateProps, ...updatedProps}, {...initialState, ...updatedState});
     nodes = replaceNodes(nodes, Array.from(newDf.children));
+    update.newDf= newDf;
   };
 
-  return { df, update };
+  return [df, update, newDfRef];
 }
 
 /**
@@ -147,16 +150,15 @@ export function createTemplateAndUpdateFunction(
  * @returns {Node[]}
  */
 export function replaceNodes(oldNodes, newNodes) {
-  while (oldNodes.length > 1) {
-    oldNodes.pop().remove();
+  if (oldNodes.length === 0) {
+    return oldNodes;
   }
 
-  if (oldNodes.length === 1) {
-    oldNodes.pop().replaceWith(...newNodes);
-    return newNodes;
-  }
+  const oldNodesWrapper = document.createElement('div');
+  oldNodes[oldNodes.length - 1].after(...newNodes);
+  oldNodesWrapper.append(...oldNodes);
 
-  return oldNodes;
+  return Array.from(oldNodesWrapper.children);
 }
 
 export function getStyleString(style) {
@@ -186,3 +188,23 @@ export function dispatchEventWithData(element, eventName, data = {}) {
 
   return element.dispatchEvent(event);
 }
+
+/**
+ * Deep copy an object.
+ * @param {*} inputObject 
+ * @returns 
+ */
+const deepCopy = (inputObject) => {
+  // typeof null === 'object'
+  if (typeof inputObject !== 'object' || inputObject === null) {
+    return inputObject;
+  }
+
+  const outputObject = Array.isArray(inputObject) ? [] : {};
+
+  for (const key in inputObject) {
+    outputObject[key] = deepCopy(inputObject[key]);
+  }
+
+  return outputObject;
+};

@@ -1,25 +1,32 @@
-import { fragment, createTemplateAndUpdateFunction } from '../util.js';
+import { fragment, createTemplateAndUpdate } from '../util.js';
 import { store } from '../store.js';
 
-const templateFunc = ({}, { count = 0 }) => fragment`
-<div class="col-md-12" onclick=${handleDivClick}>
-<p>You clicked buttons ${count} ${
-  count > 1 ? 'times' : 'time'}</p>
-</div>`;
-
 export function buttonClickCountView() {
-  const { df, update } = createTemplateAndUpdateFunction(templateFunc);
+  let divClickCount = 0;
+  let count = store.getState().count;
 
-  store.renderAfterStateChange(['count'], ([count]) => {
-    update({ count });
+  const templateFunc = ({ localCount }, { count = 0 }) => fragment`
+    <div class="col-md-12" onclick=${handleDivClick}>
+    <p>You clicked buttons ${count} ${count > 1 ? 'times' : 'time'}</p>
+    <p> div element click count: ${localCount}</p>
+    </div>`;
+
+  const [df, updateDf] = createTemplateAndUpdate(
+    templateFunc,
+    { localCount: divClickCount },
+    { count }
+  );
+
+  store.watchStateChange(['count'], ({ count }) => {
+    updateDf({ localCount: divClickCount }, { count });
   });
 
+  function handleDivClick(e) {
+    divClickCount++;
+    updateDf({ localCount: divClickCount }, { count: store.getState().count });
+  }
+  
   return df;
-}
-
-function handleDivClick(e) {
-    const randomColor = Math.floor(Math.random() * 16777215).toString(16);
-    e.target.style = `background-color: #${randomColor}`;
 }
 
 export default buttonClickCountView;

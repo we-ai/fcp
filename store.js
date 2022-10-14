@@ -5,15 +5,15 @@ let store = createStore(startState);
 
 /**
  * 
- * @param {string[]} stateSliceList 
+ * @param {string[]} keyList 
  * @param {function} callback 
  */
-function renderAfterStateChange(stateSliceList, callback) {
+function watchStateChange(keyList, callback) {
   store.subscribe((state) => {
-    if (stateSliceList.length === 0) return state;
-    let values = [];
-    for (let s of stateSliceList) {
-      values.push(state[s]);
+    if (keyList.length === 0) return state;
+    let values = {};
+    for (let k of keyList) {
+      values[k] = state[k];
     }
     return values;
   }, callback);
@@ -23,7 +23,7 @@ window.onbeforeunload = (e) => {
   store.destroy();
 };
 
-store.renderAfterStateChange = renderAfterStateChange;
+store.watchStateChange = watchStateChange;
 
-export { store, renderAfterStateChange };
+export { store, watchStateChange};
 export default store;
