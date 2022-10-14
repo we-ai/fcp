@@ -1,5 +1,5 @@
 // This state manager was inspired by zustand (https://github.com/pmndrs/zustand)
-import { deepCopy } from './utils.js';
+import { deepCopy } from './util.js';
 
 export default function createStore(initialState = {}) {
   let state = deepCopy(initialState);

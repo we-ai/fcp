@@ -127,21 +127,43 @@ function wrapToDiv(nodeList) {
  */
 export function createTemplateAndUpdate(
   templateFunc,
-  templateProps = {},
-  initialState = {}
+  initialProps = {}
 ) {
-  const df = templateFunc(templateProps, initialState);
+  let templateState = deepCopy(initialProps);
+  let df = templateFunc(templateState);
   let nodes = Array.from(df.children);
-  let newDfRef = df;
+  let newDf;
 
-  const update = (updatedProps = {}, updatedState = {}) => {
-    const newDf = templateFunc({...templateProps, ...updatedProps}, {...initialState, ...updatedState});
-    nodes = replaceNodes(nodes, Array.from(newDf.children));
-    update.newDf= newDf;
+  // todo: handle event listeners attached to nodes in df
+  const update = (updatedProps) => {
+    const updatedTemplateState = {...templateState, ...updatedProps};
+
+    if (_.isEqual(updatedTemplateState, templateState)) {
+      return;
+    }
+
+    templateState = updatedTemplateState;
+    // update nodes using updatedFragmentState, or create new nodes and replace old nodes
+    newDf = templateFunc(templateState);
+    const newNodes = Array.from(newDf.children);
+    replaceNodes(nodes, newNodes);
+    nodes = newNodes;
   };
 
-  return [df, update, newDfRef];
+    // // todo: handle event listeners attached to nodes in df
+    // const update = (updatedProps = {}, updatedState = {}) => {
+    //   newDf = templateFunc({...templateProps, ...updatedProps}, {...initialState, ...updatedState});
+    //   const newNodes = Array.from(newDf.children);
+    //   replaceNodes(nodes, newNodes);
+    //   nodes = newNodes;
+    // };
+
+
+  return [df, update];
+
+
 }
+
 
 /**
  * Replace old nodes with new nodes.
@@ -159,6 +181,34 @@ export function replaceNodes(oldNodes, newNodes) {
   wrapperDiv.append(...oldNodes);
 
   return Array.from(wrapperDiv.children);
+}
+
+export function copyAttributes(toEle, fromEle) {
+  const attributes = Array.from(fromEle.attributes);
+  for (const {name, value} of attributes) {
+    toEle.setAttribute(name, value);
+  }
+}
+
+export function copyClasses(toEle, fromEle) {
+  const classes = Array.from(fromEle.classList);
+  for (const className of classes) {
+    toEle.classList.add(className);
+  }
+}
+
+export function copyStyles(toEle, fromEle) {
+  const styles = Array.from(fromEle.style);
+  for (const st of styles) {
+    toEle.style[st] = fromEle.style[st];
+  }
+}
+
+export function copyDataSet(toEle, fromEle) {
+  const dataSet = Array.from(fromEle.dataset);
+  for (const ds of dataSet) {
+    toEle.dataset[ds] = fromEle.dataset[ds];
+  }
 }
 
 export function getStyleString(style) {
@@ -223,3 +273,4 @@ export function typeOf(value) {
 
   return type;
 }
+
