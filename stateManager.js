@@ -1,5 +1,5 @@
 // This state manager was inspired by zustand (https://github.com/pmndrs/zustand)
-import {deepCopy} from './utils.js';
+import { deepCopy } from './utils.js';
 
 export default function createStore(initialState = {}) {
   let state = deepCopy(initialState);
@@ -7,17 +7,20 @@ export default function createStore(initialState = {}) {
 
   const setState = (update, replace) => {
     const currSlice = typeof update === 'function' ? update(state) : update;
+
     if (currSlice !== state) {
       const prevState = state;
       state = replace ? currSlice : { ...state, ...currSlice };
       listeners.forEach((listener) => listener(state, prevState));
     }
+
   };
 
   const getState = () => state;
 
   const subscribeListener = (listener) => {
     listeners.add(listener);
+
     return () => listeners.delete(listener);
   };
 
@@ -27,6 +30,7 @@ export default function createStore(initialState = {}) {
       let currentSlice = selector(state);
       listener = (state) => {
         const nextSlice = selector(state);
+        
         if (currentSlice !== nextSlice) {
           const prevSlice = currentSlice;
           currentSlice = nextSlice;
@@ -34,6 +38,7 @@ export default function createStore(initialState = {}) {
         }
       };
     }
+
     return subscribeListener(listener);
   };
 

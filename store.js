@@ -11,10 +11,10 @@ let store = createStore(startState);
 function watchStateChange(keyList, callback) {
   store.subscribe((state) => {
     if (keyList.length === 0) return state;
+    
     let values = {};
-    for (let k of keyList) {
-      values[k] = state[k];
-    }
+    keyList.forEach((key) => {values[key] = state[key]});
+
     return values;
   }, callback);
 }
