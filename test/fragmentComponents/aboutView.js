@@ -1,4 +1,4 @@
-import { fragment } from '../util.js';
+import { fragment } from '../../src/fragment.js';
 
 export function aboutView(props = {}) {
   const { content = 'John Doe' } = props;

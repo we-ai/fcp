@@ -1,5 +1,6 @@
-import { fragment, getStyleString } from '../util.js';
-import { store } from '../store.js';
+import { fragment } from '../../src/fragment.js';
+import { getStyleString } from '../../src/utils.js';
+import { store } from '../../src/store.js';
 
 export function buttonView(props = {}) {
   const { text = 'Button', style: styleInput = {} } = props;
