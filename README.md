@@ -1,3 +1,3 @@
 # fcp
 
-Functional Components Practice
+Functional Component Practices
