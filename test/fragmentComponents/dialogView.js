@@ -1,4 +1,4 @@
-import { fragment } from '../util.js';
+import { fragment } from '../../src/fragment.js';
 import { buttonView } from './buttonView.js';
 
 export function dialogView(props = {}) {

@@ -1,9 +1,5 @@
-import { fragment, createTemplateAndUpdate } from '../util.js';
-import { store } from '../store.js';
-
-
-
-
+import { fragment, createTemplateAndUpdate } from '../../src/fragment.js';
+import { store } from '../../src/store.js';
 
 export function buttonClickCountView() {
   let divClickCount = 0;
