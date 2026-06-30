@@ -1,11 +1,41 @@
 {
   "name": "fcp",
   "version": "0.1.0",
-  "description": "Functional Component Practice",
+  "description": "Functional Component Practices",
+  "type": "module",
   "license": "MIT",
   "author": "Warren Lu",
-  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/we-ai/fcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/we-ai/fcp/issues"
+  },
+  "homepage": "https://github.com/we-ai/fcp#readme",
+  "keywords": [
+    "components",
+    "dom",
+    "functional-components",
+    "template-literals",
+    "state"
+  ],
+  "main": "./index.js",
+  "exports": {
+    ".": "./index.js",
+    "./fragment": "./src/fragment.js",
+    "./state": "./src/stateManager.js",
+    "./store": "./src/store.js",
+    "./utils": "./src/utils.js"
+  },
+  "files": [
+    "index.js",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --input-type=module -e \"import('./index.js')\"",
+    "pack:dry-run": "npm pack --dry-run"
   }
 }

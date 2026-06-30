@@ -155,7 +155,7 @@ export function deepCopy(input) {
  * @param {object} obj2 
  * @returns boolean
  */
-export function deepCompare(obj1, obj2) {
+export function isDeepEqual(obj1, obj2) {
   if (obj1 === obj2) return true;
 
   if (typeOf(obj1) !== typeOf(obj2) || typeOf(obj1) !== 'object') return false;
@@ -166,8 +166,7 @@ export function deepCompare(obj1, obj2) {
   if (keys1.length !== keys2.length) return false;
 
   for (const key of keys1) {
-    if (!keys2.includes(key)) return false;
-    if (!deepCompare(obj1[key], obj2[key])) return false;
+    if (!keys2.includes(key) || !isDeepEqual(obj1[key], obj2[key])) return false;
   }
 
   return true;
@@ -187,4 +186,3 @@ export function typeOf(value) {
 
   return type;
 }
-

@@ -19,9 +19,11 @@ function watchStateChange(keyList, callback) {
   }, callback);
 }
 
-window.onbeforeunload = (e) => {
-  store.destroy();
-};
+if (typeof window !== 'undefined') {
+  window.onbeforeunload = () => {
+    store.destroy();
+  };
+}
 
 store.watchStateChange = watchStateChange;
 

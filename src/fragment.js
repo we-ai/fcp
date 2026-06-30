@@ -1,5 +1,4 @@
-import {isEqual} from '../lib/underscore.js';
-import { replaceNode, replaceNodeList, deepCopy } from "./utils.js";
+import { replaceNode, replaceNodeList, deepCopy, isDeepEqual } from "./utils.js";
 
 /**
  * Use tag template to parses a string into HTML DocumentFragment
@@ -10,7 +9,7 @@ import { replaceNode, replaceNodeList, deepCopy } from "./utils.js";
  export function fragment(strings, ...values) {
   const N = values.length;
   let inputStrings= strings.slice();
-  let transformedStringList = [];
+  let stringAndValueList = [];
   let elementAndDocumentFragmentList = [];
   let eventList=[];
 
@@ -19,21 +18,21 @@ import { replaceNode, replaceNodeList, deepCopy } from "./utils.js";
       values[i] instanceof HTMLElement ||
       values[i] instanceof DocumentFragment
     ) {
-      transformedStringList.push(inputStrings[i], `<div id="placeholder"></div>`);
+      stringAndValueList.push(inputStrings[i], `<div id="placeholder"></div>`);
       elementAndDocumentFragmentList.push(values[i]);
     } else if ( typeof values[i] === 'function' && 
               inputStrings[i].match(/on[a-z]{2,30}\s*=\s*$/) ) { 
       const [matchedString, eventString] = inputStrings[i].match(/on([a-z]{2,30})\s*=\s*$/);
       inputStrings[i] = inputStrings[i].replace(matchedString, `data-event-${eventString}${i}`);
-      transformedStringList.push(inputStrings[i]);
+      stringAndValueList.push(inputStrings[i]);
       eventList.push({eventString, index: i, eventHandler: values[i]});
     } else {
-      transformedStringList.push(inputStrings[i], values[i]);
+      stringAndValueList.push(inputStrings[i], values[i]);
     }
   }
 
-  transformedStringList.push(inputStrings[N]);
-  const documentFragment = stringToFragment(transformedStringList.join(''));
+  stringAndValueList.push(inputStrings[N]);
+  const documentFragment = stringToFragment(stringAndValueList.join(''));
 
   if (elementAndDocumentFragmentList.length > 0) {
     const phEleList = documentFragment.querySelectorAll('#placeholder');
@@ -84,7 +83,7 @@ export function stringToFragment(str) {
   const update = (updatedProps) => {
     const updatedTemplateState = {...templateState, ...updatedProps};
 
-    if (isEqual(updatedTemplateState, templateState)) {
+    if (isDeepEqual(updatedTemplateState, templateState)) {
       return;
     }
 
@@ -98,6 +97,4 @@ export function stringToFragment(str) {
   };
 
   return [df, update];
-
-
 }
